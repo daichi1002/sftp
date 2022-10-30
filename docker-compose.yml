@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  sftp-server:
+    image: atmoz/sftp
+    container_name: sftp-server
+    volumes:
+      - ./sftp-server/files:/home/user/get/
+      # 公開鍵をサーバー側におく
+      - $HOME/.ssh/id_rsa.pub:/home/user/.ssh/keys/id_rsa.pub:ro
+    ports:
+      - "2222:22"
+    command: "user:password:::get"
