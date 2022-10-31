@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"sftp/config"
+	"sftp/service"
 	"sftp/util"
 
 	"gorm.io/gorm"
@@ -10,6 +12,8 @@ import (
 var logger = util.NewLogger()
 
 func main() {
+	// contextに値を設定
+	ctx := context.Background()
 	// DB接続処理
 	databaseConfig := config.GetDatabaseConfig()
 	db, err := databaseConfig.ConnectDatabaseWithGorm(10)
@@ -17,6 +21,12 @@ func main() {
 		logger.Fatalf("Failed to connect database")
 	}
 	defer closeGormDB(db)
+
+	// service初期化処理
+	service := service.NewGetFileService()
+
+	// バッチ処理実行
+	service.Execute(ctx, db)
 }
 
 func closeGormDB(db *gorm.DB) {
