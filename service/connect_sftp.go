@@ -14,10 +14,38 @@ func (s Service) connectSftp() (*ssh.Client, *sftp.Client) {
 	// SSHクライアントの作成
 	sshClient := s.createSshClient()
 
+	// SFTPサーバーと接続
+	sftpClient, err := sftp.NewClient(sshClient)
+	if err != nil {
+		s.logger.Fatalf("Failed to create sftp client : %v", err)
+	}
+
+	return sshClient, sftpClient
+
 }
 
 func (s Service) createSshClient() *ssh.Client {
 	config, addr := s.createSshClientConfig()
+
+	var (
+		sshClient *ssh.Client
+		err       error
+	)
+
+	// セッション開始
+	for i := 1; i <= 10; i++ {
+		sshClient, err = ssh.Dial("tcp", addr, &config)
+
+		if err == nil {
+			break
+		}
+		time.Sleep(time.Duration(3000) * time.Millisecond)
+	}
+	if err != nil {
+		s.logger.Fatalf("failed connect sftp server : %v", err)
+	}
+
+	return sshClient
 }
 
 func (s Service) createSshClientConfig() (ssh.ClientConfig, string) {
@@ -34,6 +62,8 @@ func (s Service) createSshClientConfig() (ssh.ClientConfig, string) {
 	config := ssh.ClientConfig{
 		// SSH ユーザ名
 		User: userId,
+		// ホスト鍵認証（Todo）
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		// 認証方式
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),

@@ -27,5 +27,6 @@ func NewGetFileService() interfaces.Service {
 func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 	s.logger.Info("start connect sftp")
 	sshClient, sftpClient := s.connectSftp()
+
 	s.logger.Info("end connect sftp")
 }
