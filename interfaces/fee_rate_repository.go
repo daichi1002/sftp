@@ -1,9 +1,10 @@
 package interfaces
 
 import (
+	"context"
 	"sftp/domain"
 )
 
 type FeeRateRepository interface {
-	ListFeeRates() ([]*domain.FeeRate, error)
+	ListFeeRates(ctx context.Context) ([]*domain.FeeRate, error)
 }

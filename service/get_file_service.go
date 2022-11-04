@@ -30,7 +30,7 @@ func NewGetFileService(feeRateRepository interfaces.FeeRateRepository) interface
 func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 
 	s.logger.Info("start get fee rate")
-	feeRates := s.getFeeRate(db)
+	feeRates := s.getFeeRate(ctx, db)
 	fmt.Println(feeRates)
 	s.logger.Info("end get fee rate")
 

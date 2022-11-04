@@ -1,15 +1,16 @@
 package service
 
 import (
+	"context"
 	"sftp/domain"
 
 	"gorm.io/gorm"
 )
 
-func (s Service) getFeeRate(db *gorm.DB) []*domain.FeeRate {
+func (s Service) getFeeRate(ctx context.Context, db *gorm.DB) []*domain.FeeRate {
 
 	// 手数料率の全件取得
-	feeRates, err := s.repository.ListFeeRates()
+	feeRates, err := s.repository.ListFeeRates(ctx)
 
 	if err != nil {
 		s.logger.Fatal("Failed to get fee rate")
