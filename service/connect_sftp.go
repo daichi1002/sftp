@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -79,7 +78,7 @@ func (s Service) createSshClientConfig() (ssh.ClientConfig, string) {
 
 // 認証に必要な鍵情報の取得
 func (s Service) getSshKey() ssh.Signer {
-	buf, err := ioutil.ReadFile(os.Getenv("SshKeyPath"))
+	buf, err := os.ReadFile(os.Getenv("SshKeyPath"))
 	if err != nil {
 		s.logger.Fatalf("failed to read SshKeyPath: %v", err)
 	}
