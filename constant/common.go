@@ -11,3 +11,11 @@ const (
 	ReqProcessingDateFormat = "2006-01-02"
 	LOCAL                   = "UTC"
 )
+
+const (
+	// サーバーディレクトリ
+	SERVER_DIR = "./get/"
+	// サーバーファイル名
+	FILE_NAME = "test.csv"
+	TMP_DIR   = "./tmp/"
+)

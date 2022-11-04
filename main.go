@@ -28,6 +28,12 @@ func main() {
 	}
 	defer closeGormDB(db)
 
+	// tmpディレクトリを作成
+	mkdirErr := util.MakeDirectory(constant.TMP_DIR)
+	if mkdirErr != nil {
+		logger.Fatal(mkdirErr.Error())
+	}
+
 	// リポジトリ初期化
 	feeRateRepository := repository.NewFeeRateRepository(db)
 
