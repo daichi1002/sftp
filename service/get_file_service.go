@@ -39,7 +39,7 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 	s.logger.Info("end connect sftp")
 
 	s.logger.Info("start get file from sftp")
-	file := s.getFile(sshClient, sftpClient)
+	file := s.getSalesData(sshClient, sftpClient)
 	fmt.Println(file)
 	s.logger.Info("end get file from sftp")
 }

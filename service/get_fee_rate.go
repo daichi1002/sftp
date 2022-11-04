@@ -9,7 +9,7 @@ import (
 
 func (s Service) getFeeRate(ctx context.Context, db *gorm.DB) []*domain.FeeRate {
 
-	// 手数料率の全件取得
+	// 手数料率の取得
 	feeRates, err := s.repository.ListFeeRates(ctx)
 
 	if err != nil {
