@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"flag"
 	"sftp/config"
+	"sftp/constant"
 	"sftp/repository"
 	"sftp/service"
 	"sftp/util"
@@ -13,8 +15,11 @@ import (
 var logger = util.NewLogger()
 
 func main() {
+	// 起動引数の処理
+	reqProcessingDate := parseArgs()
 	// contextに値を設定
 	ctx := context.Background()
+	ctx = context.WithValue(ctx, constant.ProcessingDateContextKey, reqProcessingDate)
 	// DB接続処理
 	databaseConfig := config.GetDatabaseConfig()
 	db, err := databaseConfig.ConnectDatabaseWithGorm(10)
@@ -41,4 +46,20 @@ func closeGormDB(db *gorm.DB) {
 	if err := sqlDB.Close(); err != nil {
 		logger.Errorf("failed to close sql db, error: %v", err)
 	}
+}
+
+func parseArgs() string {
+	// 処理日時を取得
+	reqProcessingDate := flag.String("date", "", "処理日時")
+
+	flag.Parse()
+
+	// 処理日時をフォーマットする
+	processingDate, err := util.CreateProcessingDate(*reqProcessingDate)
+
+	if err != nil {
+		logger.Fatalf("Failed to parse date", err)
+	}
+
+	return processingDate
 }
