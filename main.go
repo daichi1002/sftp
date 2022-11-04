@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"sftp/config"
+	"sftp/repository"
 	"sftp/service"
 	"sftp/util"
 
@@ -22,8 +23,11 @@ func main() {
 	}
 	defer closeGormDB(db)
 
+	// リポジトリ初期化
+	feeRateRepository := repository.NewFeeRateRepository(db)
+
 	// service初期化処理
-	service := service.NewGetFileService()
+	service := service.NewGetFileService(feeRateRepository)
 
 	// バッチ処理実行
 	service.Execute(ctx, db)

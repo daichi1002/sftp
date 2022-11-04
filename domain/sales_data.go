@@ -6,8 +6,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type Sale struct {
-	SaleId        string          // 売上ID
+type SalesData struct {
+	SalesDataId   string          // 売上ID
 	ProductName   string          // 商品名
 	SalesAmount   decimal.Decimal // 売上金額
 	FeeAmount     decimal.Decimal // 手数料額

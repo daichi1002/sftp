@@ -11,21 +11,29 @@ import (
 )
 
 type Service struct {
-	logger *zap.SugaredLogger
+	logger     *zap.SugaredLogger
+	repository interfaces.FeeRateRepository
 }
 
 // NewGetFileService の初期化処理
-func NewGetFileService() interfaces.Service {
+func NewGetFileService(feeRateRepository interfaces.FeeRateRepository) interfaces.Service {
 
 	logger := util.NewLogger()
 	// サービスの生成
 	service := &Service{
-		logger: logger,
+		logger:     logger,
+		repository: feeRateRepository,
 	}
 	return service
 }
 
 func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
+
+	s.logger.Info("start get fee rate")
+	feeRates := s.getFeeRate(db)
+	fmt.Println(feeRates)
+	s.logger.Info("end get fee rate")
+
 	s.logger.Info("start connect sftp")
 	sshClient, sftpClient := s.connectSftp()
 	s.logger.Info("end connect sftp")
