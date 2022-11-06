@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sftp/interfaces"
 	"sftp/util"
 
@@ -43,6 +42,6 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 
 	s.logger.Info("start calc fee amount")
 	salesData := s.calcFeeAmount(feeRates)
-	fmt.Println(salesData)
+
 	s.logger.Info("end calc fee amount")
 }

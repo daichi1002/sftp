@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/joho/godotenv v1.4.0
+	github.com/jszwec/csvutil v1.7.1
 	github.com/oklog/ulid v1.3.1
 	github.com/pkg/sftp v1.13.5
 	github.com/shopspring/decimal v1.3.1

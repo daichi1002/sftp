@@ -1,32 +1,41 @@
 package service
 
 import (
-	"encoding/csv"
-	"fmt"
 	"os"
 	"path/filepath"
 	"sftp/constant"
 	"sftp/domain"
+
+	"github.com/jszwec/csvutil"
 )
 
-func (s Service) calcFeeAmount(feeRates []*domain.FeeRate) []*domain.SalesData {
+func (s Service) calcFeeAmount(feeRates []*domain.FeeRate) (salesData []*domain.SalesData) {
 	// tmpディレクトリに生成されたファイルの値をsalesData構造体に格納
 	localFilePath := filepath.Join(constant.TMP_DIR, constant.FILE_NAME)
-	salesData, err := os.Open(localFilePath)
+	data, err := os.ReadFile(localFilePath)
 
 	if err != nil {
 		s.logger.Fatalf("Failed to read file : %v", err)
 	}
-
-	// CSVファイルの読み込み
-	r := csv.NewReader(salesData)
-	rows, err := r.ReadAll()
+	// CSV内データを構造体にマッピング
+	err = csvutil.Unmarshal(data, &salesData)
 
 	if err != nil {
-		s.logger.Fatalf("Failed to read rows : %v")
+		s.logger.Fatalf("Failed to unmarshal data : %v", err)
 	}
 
-	fmt.Println(rows)
+	// 決済手段に応じて、各手数料を計算
+	calcData(feeRates, salesData)
 
-	return make([]*domain.SalesData, 0)
+	return
+}
+
+func calcData(feeRates []*domain.FeeRate, salesData []*domain.SalesData) {
+	for _, data := range salesData {
+		for _, rate := range feeRates {
+			if data.PaymentMethod == rate.PaymentMethod {
+				data.FeeAmount = data.SalesAmount.Mul(rate.FeeRate)
+			}
+		}
+	}
 }
