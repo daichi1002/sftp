@@ -31,7 +31,6 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 
 	s.logger.Info("start get fee rate")
 	feeRates := s.getFeeRate(ctx, db)
-	fmt.Println(feeRates)
 	s.logger.Info("end get fee rate")
 
 	s.logger.Info("start connect sftp")
@@ -41,4 +40,9 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 	s.logger.Info("start get file from sftp")
 	s.getSalesData(sshClient, sftpClient)
 	s.logger.Info("end get file from sftp")
+
+	s.logger.Info("start calc fee amount")
+	salesData := s.calcFeeAmount(feeRates)
+	fmt.Println(salesData)
+	s.logger.Info("end calc fee amount")
 }
