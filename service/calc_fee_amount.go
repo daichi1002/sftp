@@ -26,19 +26,23 @@ func (s Service) calcFeeAmount(feeRates []*domain.FeeRate) (salesData []*domain.
 	}
 
 	// 決済手段に応じて、各手数料を計算
-	calcData(feeRates, salesData)
+	for _, data := range salesData {
+		s.calcData(feeRates, data)
+		// ULIDの生成
+		data.SalesDataId = util.GetUlid()
+	}
 
 	return
 }
 
-func calcData(feeRates []*domain.FeeRate, salesData []*domain.SalesData) {
-	for _, data := range salesData {
-		for _, rate := range feeRates {
-			if data.PaymentMethod == rate.PaymentMethod {
-				data.FeeAmount = data.SalesAmount.Mul(rate.FeeRate)
-			}
+func (s Service) calcData(feeRates []*domain.FeeRate, data *domain.SalesData) {
+	for _, rate := range feeRates {
+		if data.PaymentMethod == rate.PaymentMethod {
+			data.FeeAmount = data.SalesAmount.Mul(rate.FeeRate)
+			return
 		}
-		// ULIDの生成
-		data.SalesDataId = util.GetUlid()
 	}
+
+	s.logger.Warnf("sales not associated fee. 商品名: %v 取引金額: %v 支払方法: %v 決済日時: %v",
+		data.ProductName, data.SalesAmount, data.PaymentMethod, data.TransactionDate)
 }
