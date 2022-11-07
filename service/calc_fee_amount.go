@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"sftp/constant"
 	"sftp/domain"
+	"sftp/util"
 
 	"github.com/jszwec/csvutil"
 )
@@ -37,5 +38,7 @@ func calcData(feeRates []*domain.FeeRate, salesData []*domain.SalesData) {
 				data.FeeAmount = data.SalesAmount.Mul(rate.FeeRate)
 			}
 		}
+		// ULIDの生成
+		data.SalesDataId = util.GetUlid()
 	}
 }
