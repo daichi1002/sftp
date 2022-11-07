@@ -36,9 +36,10 @@ func main() {
 
 	// リポジトリ初期化
 	feeRateRepository := repository.NewFeeRateRepository(db)
+	salesDataRepository := repository.NewSalesDataRepository(db)
 
 	// service初期化処理
-	service := service.NewGetFileService(feeRateRepository)
+	service := service.NewGetFileService(feeRateRepository, salesDataRepository)
 
 	// バッチ処理実行
 	service.Execute(ctx, db)

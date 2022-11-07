@@ -10,18 +10,20 @@ import (
 )
 
 type Service struct {
-	logger     *zap.SugaredLogger
-	repository interfaces.FeeRateRepository
+	logger              *zap.SugaredLogger
+	feeRateRepository   interfaces.FeeRateRepository
+	salesDataRepository interfaces.SalesDataRepository
 }
 
 // NewGetFileService の初期化処理
-func NewGetFileService(feeRateRepository interfaces.FeeRateRepository) interfaces.Service {
+func NewGetFileService(feeRateRepository interfaces.FeeRateRepository, salesDataRepository interfaces.SalesDataRepository) interfaces.Service {
 
 	logger := util.NewLogger()
 	// サービスの生成
 	service := &Service{
-		logger:     logger,
-		repository: feeRateRepository,
+		logger:              logger,
+		feeRateRepository:   feeRateRepository,
+		salesDataRepository: salesDataRepository,
 	}
 	return service
 }
@@ -42,6 +44,9 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 
 	s.logger.Info("start calc fee amount")
 	salesData := s.calcFeeAmount(feeRates)
-
 	s.logger.Info("end calc fee amount")
+
+	s.logger.Info("start save sales data")
+	s.saveSalesData(salesData)
+	s.logger.Info("end save sales data")
 }
