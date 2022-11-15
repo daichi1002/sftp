@@ -2,11 +2,14 @@ package service
 
 import (
 	"sftp/domain"
+	"sftp/util"
 	"testing"
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
+
+var logger = util.NewLogger()
 
 func TestCalcData(t *testing.T) {
 	type Args struct {
@@ -59,16 +62,59 @@ func TestCalcData(t *testing.T) {
 				TransactionStatus: "支払",
 				TransactionDate:   "2022-11-08 10:00:00",
 			},
+		}, {
+			desc: "売上データが手数料率に紐づかないこと",
+			args: Args{
+				feeRates: []*domain.FeeRate{
+					{
+						FeeRateId:     "TEST1",
+						FeeRate:       decimal.NewFromFloat(0.5),
+						PaymentMethod: "paypay",
+						StartDate:     "2022-01-01",
+						EndDate:       "2030-12-31",
+					},
+					{
+						FeeRateId:     "TEST2",
+						FeeRate:       decimal.NewFromFloat(0.5),
+						PaymentMethod: "linepay",
+						StartDate:     "2022-01-01",
+						EndDate:       "2030-12-31",
+					},
+				},
+				data: &domain.SalesData{
+					SalesDataId:       "TEST1",
+					ProductName:       "タマネギ",
+					SalesAmount:       decimal.NewFromInt(1000),
+					FeeAmount:         decimal.NewFromInt(0),
+					Quantity:          1,
+					PaymentMethod:     "aupay",
+					TransactionStatus: "支払",
+					TransactionDate:   "2022-11-08 10:00:00",
+				},
+			},
+			exps: &domain.SalesData{
+				SalesDataId:       "TEST1",
+				ProductName:       "トマト",
+				SalesAmount:       decimal.NewFromInt(1000),
+				FeeAmount:         decimal.NewFromInt(0),
+				Quantity:          1,
+				PaymentMethod:     "aupay",
+				TransactionStatus: "支払",
+				TransactionDate:   "2022-11-08 10:00:00",
+			},
 		},
 	}
 
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			s := Service{}
+			s := Service{
+				logger: logger,
+			}
 			s.calcData(tC.args.feeRates, tC.args.data)
 
 			tc, _ := tC.args.data.FeeAmount.Value()
 			exp, _ := tC.exps.FeeAmount.Value()
+
 			assert.Equal(t, tc, exp)
 		})
 	}
