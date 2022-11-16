@@ -2,17 +2,14 @@ package service
 
 import (
 	"os"
-	"path/filepath"
-	"sftp/constant"
 	"sftp/domain"
 	"sftp/util"
 
 	"github.com/jszwec/csvutil"
 )
 
-func (s Service) calcFeeAmount(feeRates []*domain.FeeRate) (salesData []*domain.SalesData) {
+func (s Service) calcFeeAmount(feeRates []*domain.FeeRate, localFilePath string) (salesData []*domain.SalesData) {
 	// tmpディレクトリに生成されたファイルの値をsalesData構造体に格納
-	localFilePath := filepath.Join(constant.TMP_DIR, constant.FILE_NAME)
 	data, err := os.ReadFile(localFilePath)
 
 	if err != nil {

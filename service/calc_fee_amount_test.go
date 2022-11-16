@@ -1,7 +1,9 @@
 package service
 
 import (
+	"os"
 	"sftp/domain"
+	"sftp/test_util/assertion"
 	"sftp/util"
 	"testing"
 
@@ -10,6 +12,71 @@ import (
 )
 
 var logger = util.NewLogger()
+
+func TestCalcFeeAmount(t *testing.T) {
+	dir, _ := os.Getwd()
+	testFilePath := dir + "/testdata/test.csv"
+
+	testCases := []struct {
+		desc string
+		args []*domain.FeeRate
+		exps []*domain.SalesData
+	}{
+		{
+			desc: "ファイルからデータを取得し、インスタンスを生成、手数料の計算ができる",
+			args: []*domain.FeeRate{
+				{
+					FeeRateId:     "TEST1",
+					FeeRate:       decimal.NewFromFloat(0.3),
+					PaymentMethod: "paypay",
+					StartDate:     "2022-01-01",
+					EndDate:       "2030-12-31",
+				},
+				{
+					FeeRateId:     "TEST2",
+					FeeRate:       decimal.NewFromFloat(0.3),
+					PaymentMethod: "linepay",
+					StartDate:     "2022-01-01",
+					EndDate:       "2030-12-31",
+				},
+			},
+			exps: []*domain.SalesData{
+				{
+					ProductName:       "トマト",
+					SalesAmount:       decimal.NewFromInt(1000),
+					FeeAmount:         decimal.NewFromInt(300),
+					Quantity:          1,
+					PaymentMethod:     "paypay",
+					TransactionStatus: "支払",
+					TransactionDate:   "2022-11-01 10:00:00",
+				},
+				{
+					ProductName:       "キャベツ",
+					SalesAmount:       decimal.NewFromInt(2000),
+					FeeAmount:         decimal.NewFromInt(600),
+					Quantity:          2,
+					PaymentMethod:     "linepay",
+					TransactionStatus: "返品",
+					TransactionDate:   "2022-11-02 10:00:00",
+				},
+			},
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			s := Service{
+				logger: logger,
+			}
+			act := s.calcFeeAmount(tC.args, testFilePath)
+			err := assertion.AssertSales(tC.exps, act)
+
+			if err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
 
 func TestCalcData(t *testing.T) {
 	type Args struct {

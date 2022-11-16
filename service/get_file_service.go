@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"path/filepath"
+	"sftp/constant"
 	"sftp/interfaces"
 	"sftp/util"
 
@@ -43,7 +45,8 @@ func (s *Service) Execute(ctx context.Context, db *gorm.DB) {
 	s.logger.Info("end get file from sftp")
 
 	s.logger.Info("start calc fee amount")
-	salesData := s.calcFeeAmount(feeRates)
+	localFilePath := filepath.Join(constant.TMP_DIR, constant.FILE_NAME)
+	salesData := s.calcFeeAmount(feeRates, localFilePath)
 	s.logger.Info("end calc fee amount")
 
 	s.logger.Info("start save sales data")
