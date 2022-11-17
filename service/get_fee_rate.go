@@ -3,11 +3,9 @@ package service
 import (
 	"context"
 	"sftp/domain"
-
-	"gorm.io/gorm"
 )
 
-func (s Service) getFeeRate(ctx context.Context, db *gorm.DB) []*domain.FeeRate {
+func (s Service) getFeeRate(ctx context.Context) []*domain.FeeRate {
 
 	// 手数料率の取得
 	feeRates, err := s.feeRateRepository.ListFeeRates(ctx)
